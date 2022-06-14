@@ -20,9 +20,7 @@ def get_text_from_picture(image_file):
     image = Image.open(image_file)
     custom_config = r'--oem 3 --psm 6'
     text = pytesseract.image_to_string(image, config=custom_config, lang='hye+eng+rus')
-    percent = 0.0
-    author, title = 'Սա SENIOR-ի աշխատավարձ ստանալուց հետո', 'Սա SENIOR-ի աշխատավարձ ստանալուց հետո'
-    return text, percent, author, title
+    return text
 
 
 def recognize_text(file_name):
