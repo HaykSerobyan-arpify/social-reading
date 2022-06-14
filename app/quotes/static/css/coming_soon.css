@@ -1,0 +1,51 @@
+div {
+    display: block;
+}
+#seed-csp4-page {
+padding: 60px 20px 60px;
+min-height: 100%;
+}
+.seed-csp4 *, .seed-csp4 :before, .seed-csp4 :after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+.seed-csp4 body {
+    color: #666666;
+}
+.seed-csp4 body {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+element.style {
+}
+#seed-csp4-page {
+    padding: 60px 20px 60px;
+    min-height: 100%;
+}
+.seed-csp4 *, .seed-csp4 :before, .seed-csp4 :after {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+user agent stylesheet
+div {
+    display: block;
+}
+.seed-csp4 body {
+    color: #666666;
+}
+.seed-csp4 body {
+    font-family: Helvetica, Arial, sans-serif;
+}
+.seed-csp4 body {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 1000px;
+    line-height: 1.428571429;
+    color: #333;
+    background-color: #fff;
+}
+body {
+    height: 100%;
+    text-align: center;
+}
