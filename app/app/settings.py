@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'save',
     'library',
     'sentence',
+    'drf_api_logger',
     # 'notifications',
     # 'allauth',
     # 'allauth.account',
@@ -95,6 +96,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'drf_api_logger.middleware.api_logger_middleware.APILoggerMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -359,3 +361,5 @@ SWAGGER_SETTINGS = {
 }
 
 DOMAIN = os.getenv('DOMAIN')
+
+DRF_API_LOGGER_DATABASE = True
