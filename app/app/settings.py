@@ -21,6 +21,10 @@ class PatchedDatabaseOperations(DatabaseOperations, ABC):
     def conditional_expression_supported_in_where_clause(expression):
         return False
 
+    def date_trunc_sql(self, lookup_type, field_name):
+        # https://github.com/nesdis/djongo/issues/343
+        return "EXTRACT(%s FROM %s)" % (lookup_type, field_name)
+
 
 DatabaseWrapper.ops_class = PatchedDatabaseOperations
 
@@ -362,4 +366,6 @@ SWAGGER_SETTINGS = {
 
 DOMAIN = os.getenv('DOMAIN')
 
+DRF_API_LOGGER_SIGNAL = True
+DRF_API_LOGGER_TIMEDELTA = 240
 DRF_API_LOGGER_DATABASE = True
