@@ -44,8 +44,8 @@ class QuoteSerializer(serializers.ModelSerializer):
         model = Quote
         fields = ('id', 'author', 'date_posted',
                   'book_author', 'quote_title', 'book_category',
-                  'quote_file', 'quote_text', 'percent', 'styles',
-                  'text_background', 'likes',
+                  'quote_file', 'quote_text', 'quote_text_json',
+                  'percent', 'styles', 'text_background', 'likes',
                   'save_users', 'comments', 'published', 'is_active')
 
 
@@ -66,18 +66,16 @@ class QuotesViewSet(viewsets.ModelViewSet):
 
         # text recognition
         recognized_array = recognize_text(self.request.data.get('quote_file'))
-        quote_text, percent, author, title = get_text_from_book(recognized_array)
-        # later = time.time()
-        # difference = int(later - now)
-        # print(difference)
-        # quote_text = get_text_from_picture(self.request.data.get('quote_file'))
+        quote_text, text_JSON,  percent, author, title, category = get_text_from_book(recognized_array)
         try:
             if isinstance(self.request.user, AnonymousUser):
                 serializer.save(author=None, book_author=author, quote_title=title,
-                                quote_text=quote_text, percent=percent)
+                                quote_text=quote_text, percent=percent, book_category=category,
+                                quote_text_json=text_JSON, quote_file=f"upload{self.request.data.get('quote_file')}")
             else:
                 serializer.save(author=self.request.user, book_author=author, quote_title=title,
-                                quote_text=quote_text, percent=percent)
+                                quote_text=quote_text, percent=percent, book_category=category,
+                                quote_text_json=text_JSON, quote_file=f"upload/{self.request.data.get('quote_file')}")
         except ValueError:
             raise FieldError("User must be authorised")
 

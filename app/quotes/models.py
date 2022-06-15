@@ -29,6 +29,8 @@ class Quote(models.Model):
 
     quote_text = models.TextField('Quote text', blank=True, null=True)
 
+    quote_text_json = models.JSONField('JSON text', blank=True, null=True)
+
     percent = models.FloatField('Percent', blank=True, null=True)
 
     text_background = models.ImageField('Quote text background', upload_to='upload',
