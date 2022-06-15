@@ -32,5 +32,5 @@ def register_social_user(provider, user_id, email, first_name, last_name, avatar
         user.is_active = True
         user.auth_provider = provider
         user.save()
-        #authenticate(email=email, password=SOCIAL_SECRET)
+        authenticate(email=email, password=SOCIAL_SECRET)
         return user.tokens()
