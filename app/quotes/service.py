@@ -84,7 +84,6 @@ def get_text_from_book(recognized_array):
                 t = t[header_index + 1:]
                 text += f"<h1>{header}</h1>" + "\n" + f"<h3>{el.get('index_name')}</h3>" + "\n" + f"<p>{t}</p>"
                 text_json[el.get('index_name')] = t
-
         books = db.library_book.find({'id': book_id})
         for book in books:
             author = book.get('author')
