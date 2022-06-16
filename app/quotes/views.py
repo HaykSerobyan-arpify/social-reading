@@ -25,6 +25,7 @@ def coming_soon(request):
 
 
 def like_quote(request):
+
     quote = get_object_or_404(Quote, id=request.POST.get('quote_id'))
     if quote.likes.filter(id=request.user.id).exists():
         pass
