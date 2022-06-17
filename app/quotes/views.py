@@ -73,7 +73,7 @@ class QuotesViewSet(viewsets.ModelViewSet):
             if isinstance(self.request.user, AnonymousUser):
                 serializer.save(author=None, book_author=author, quote_title=title,
                                 quote_text=quote_text, percent=percent, book_category=category,
-                                quote_text_json=text_JSON, quote_file=f"upload{self.request.data.get('quote_file')}")
+                                quote_text_json=text_JSON, quote_file=f"upload/{self.request.data.get('quote_file')}")
             else:
                 serializer.save(author=self.request.user, book_author=author, quote_title=title,
                                 quote_text=quote_text, percent=percent, book_category=category,
