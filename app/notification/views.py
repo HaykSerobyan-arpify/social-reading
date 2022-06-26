@@ -8,7 +8,6 @@ from notification.models import Notification
 def showNotifications(request):
     user = request.user
     notification = Notification.objects.all()
-    print(user)
 
     # template = loader.get_template('notification/notifications.html')
 

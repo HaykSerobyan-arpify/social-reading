@@ -78,7 +78,6 @@ class QuotesViewSet(viewsets.ModelViewSet):
                 serializer.save(author=self.request.user, book_author=author, quote_title=title,
                                 quote_text=quote_text, percent=percent, book_category=category,
                                 quote_text_json=text_JSON, quote_opencv_file=f"opencv/{self.request.data.get('quote_file')}")
-                print({self.request.data.get('quote_file')})
         except ValueError:
             raise FieldError("User must be authorised")
 
