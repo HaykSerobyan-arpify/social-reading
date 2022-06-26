@@ -11,7 +11,7 @@
 {% for notification in notifications %}
 
 
-{% if notification.notification_type == 1 %}
+{% if notification.notification_type == 5 %}
       <div class="notification">
 
       <article class="media">
@@ -75,7 +75,7 @@
 
 
 <!-- FOR LIKE --->
-{% if notification.notification_type == 2 %}
+{% if notification.notification_type == 1 %}
       <div class="notification">
 
       <article class="media">
@@ -99,8 +99,9 @@
 
   <div class="media-right">
     <figure class="image is-128x128">
-      <img src="https://www.socialreading.xyz{{ notification.post.quote_file.url }}">
-        <p>https://www.socialreading.xyz{{ notification.post.quote_file.url }}</p>
+
+        <a href="https://www.socialreading.xyz{{ notification.post.quote_file.url }}">
+                                            <img src="https://www.socialreading.xyz{{ notification.post.quote_file.url }}"></a>
   </figure>
   </div>
 </article>

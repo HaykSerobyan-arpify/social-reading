@@ -25,6 +25,7 @@ def coming_soon(request):
 
 
 def like_quote(request):
+
     quote = get_object_or_404(Quote, id=request.POST.get('quote_id'))
     if quote.likes.filter(id=request.user.id).exists():
         pass
@@ -66,19 +67,18 @@ class QuotesViewSet(viewsets.ModelViewSet):
 
         # text recognition
         recognized_array = recognize_text(self.request.data.get('quote_file'))
-        quote_text, text_JSON, percent, author, title, category = get_text_from_book(recognized_array)
+        quote_text, text_JSON,  percent, author, title, category = get_text_from_book(recognized_array)
         try:
             # test
             if isinstance(self.request.user, AnonymousUser):
                 serializer.save(author=None, book_author=author, quote_title=title,
                                 quote_text=quote_text, percent=percent, book_category=category,
-                                quote_text_json=text_JSON,
-                                quote_opencv_file=f"opencv/{self.request.data.get('quote_opencv_file')}")
+                                quote_text_json=text_JSON, quote_opencv_file=f"opencv/{self.request.data.get('quote_file')}")
             else:
                 serializer.save(author=self.request.user, book_author=author, quote_title=title,
                                 quote_text=quote_text, percent=percent, book_category=category,
-                                quote_text_json=text_JSON,
-                                quote_opencv_file=f"opencv/{self.request.data.get('quote_opencv_file')}")
+                                quote_text_json=text_JSON, quote_opencv_file=f"opencv/{self.request.data.get('quote_file')}")
+                print({self.request.data.get('quote_file')})
         except ValueError:
             raise FieldError("User must be authorised")
 

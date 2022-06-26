@@ -21,7 +21,8 @@ class Quote(models.Model):
                                    validators=[MinLengthValidator(limit_value=2, message=None), ])
 
     book_category = models.CharField('Category', max_length=20,
-                                     validators=[MinLengthValidator(limit_value=2, message=None), ])
+                                     validators=[MinLengthValidator(limit_value=2, message=None), ],
+                                     blank=True, null=True)
 
     quote_file = models.ImageField('Quote', upload_to='upload',
                                    validators=[validate_image_file_extension,
