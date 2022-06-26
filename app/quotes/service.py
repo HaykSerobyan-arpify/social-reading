@@ -44,7 +44,7 @@ def recognize_text(file_name):
                            len(sentence) > 20]
             recognized_text_array.extend(filter_text)
             ROI_number += 1
-    cv2.imwrite(f'app/media/upload/{file_name}', image)
+    cv2.imwrite(f'app/media/opencv/{file_name}', image)
     # cv2.imshow('thresh', thresh)
     # cv2.imshow('dilate', dilate)
     # cv2.imshow('image', image)

@@ -49,3 +49,26 @@ body {
     height: 100%;
     text-align: center;
 }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: "border-box";
+
+}
+
+.footer {
+    background: linear-gradient(180deg, #FFFFFF 0%, #2F80ED 100%);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    color: white;
+    flex-wrap: wrap
+
+}
+.footer >
+
+.right_div {
+width: 200px
+}

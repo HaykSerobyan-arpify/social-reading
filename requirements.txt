@@ -122,3 +122,6 @@ Wand==0.6.7
 webencodings==0.5.1
 websocket-client==0.59.0
 wrapt==1.14.1
+channels==3.0.4
+djangochannelsrestframework==1.0.0
+selenium==4.3.0

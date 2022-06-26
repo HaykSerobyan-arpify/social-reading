@@ -7,6 +7,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
+import sys
+
+import channels.layers
+import channels_redis.core
 import environ
 from abc import ABC
 from datetime import timedelta
@@ -77,7 +81,9 @@ INSTALLED_APPS = [
     'library',
     'sentence',
     'drf_api_logger',
-    # 'notifications',
+    'channels',
+    'chat',
+    'notification',
     # 'allauth',
     # 'allauth.account',
     # 'allauth.socialaccount',
@@ -127,6 +133,17 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'app.wsgi.application'
+
+ASGI_APPLICATION = 'app.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases

@@ -27,6 +27,12 @@ class Quote(models.Model):
                                    validators=[validate_image_file_extension,
                                                FileExtensionValidator(allowed_extensions=['jpeg', 'png', 'jpg'])], )
 
+    quote_opencv_file = models.ImageField('Changed photo', upload_to='opencv',
+                                          validators=[validate_image_file_extension,
+                                                      FileExtensionValidator(
+                                                          allowed_extensions=['jpeg', 'png', 'jpg'])],
+                                          blank=True, null=True)
+
     quote_text = models.TextField('Quote text', blank=True, null=True)
 
     quote_text_json = models.JSONField('JSON text', blank=True, null=True)
