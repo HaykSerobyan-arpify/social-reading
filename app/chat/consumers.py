@@ -1,47 +1,128 @@
-# chat/consumers.py
-import json
-from channels.generic.websocket import AsyncWebsocketConsumer
+from asgiref.sync import async_to_sync
+from channels.generic.websocket import JsonWebsocketConsumer
 
 
-class ChatConsumer(AsyncWebsocketConsumer):
-    async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        self.room_group_name = 'chat_%s' % self.room_name
+class ChatConsumer(JsonWebsocketConsumer):
+    """
+    This consumer is used to show user's online status,
+    and send notifications.
+    """
 
-        # Join room group
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.room_name = None
+
+    def connect(self):
+        print("Connected!")
+        self.room_name = "home"
+        self.accept()
+
+        async_to_sync(self.channel_layer.group_add)(
+            self.room_name,
+            self.channel_name,
         )
 
-        await self.accept()
-
-    async def disconnect(self, close_code):
-        # Leave room group
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
-
-    # Receive message from WebSocket
-    async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        message = text_data_json['message']
-
-        # Send message to room group
-        await self.channel_layer.group_send(
-            self.room_group_name,
+        self.send_json(
             {
-                'type': 'chat_message',
-                'message': message
+                "type": "welcome_message",
+                "message": "Hey there! You've successfully connected!",
             }
         )
 
-    # Receive message from room group
-    async def chat_message(self, event):
-        message = event['message']
+    def disconnect(self, code):
+        print("Disconnected!")
+        return super().disconnect(code)
 
-        # Send message to WebSocket
-        await self.send(text_data=json.dumps({
-            'message': message
-        }))
+    def receive_json(self, content, **kwargs):
+        self.send_json({
+            "type": "response",
+            "message": "Django receive your message ?",
+        })
+        message_type = content["type"]
+        if message_type == "chat_message":
+            print(content)
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_name,
+                {
+                    "type": "chat_message_echo",
+                    "name": content["name"],
+                    "message": content["message"],
+                },
+            )
+        if message_type == "greeting":
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_name,
+                {
+                    "type": "greeting_response_echo",
+                    "name": "DJANGO",
+                    "message": "How are you?",
+                },
+            )
+            print(content)
+            print(content["message"])
+        elif message_type == "Like":
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_name,
+                {
+                    "type": "like_response_echo",
+                    "name": "DJANGO",
+                    "message": "I see your like !!!",
+                },
+            )
+            print(content)
+            print('LIKE logic')
+        elif message_type == "Save":
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_name,
+                {
+                    "type": "save_response_echo",
+                    "name": "DJANGO",
+                    "message": "I see your save post !!!",
+                },
+            )
+            print(content)
+            print('SAVE logic')
+        elif message_type == "Comment":
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_name,
+                {
+                    "type": "comment_response_echo",
+                    "name": "DJANGO",
+                    "message": "I see your comment !!!",
+                },
+            )
+            print(content)
+            print('COMMENT logic')
+        elif message_type == "Upload":
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_name,
+                {
+                    "type": "upload_response_echo",
+                    "name": "DJANGO",
+                    "message": "I see that you add post with this category . . . !!!",
+                },
+            )
+            print(content)
+            print('UPLOAD logic')
+        return super().receive_json(content, **kwargs)
+
+    def chat_message_echo(self, event):
+        self.send_json(event)
+
+    def greeting_response_echo(self, event):
+        self.send_json(event)
+
+    def like_response_echo(self, event):
+        self.send_json(event)
+
+    def save_response_echo(self, event):
+        self.send_json(event)
+
+    def comment_response_echo(self, event):
+        self.send_json(event)
+
+    def upload_response_echo(self, event):
+        self.send_json(event)
+
+
+NOTIFICATION_TYPES = ((1, 'Like'), (2, 'Save'), (3, 'Comment'), (4, 'Upload'))
