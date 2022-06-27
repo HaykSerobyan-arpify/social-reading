@@ -47,8 +47,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
-# MONGO_URI = os.getenv('MONGO_URI')
-MONGO_URI='mongodb://social-admin:mU4$Xej07iWNq6B5F2jdqkC3!kNcKZ#Q@161.35.92.0:27017/?directConnection=true&serverSelectionTimeoutMS=2000&tls=true&tlsAllowInvalidCertificates=true&appName=mongosh+1.5.0'
+# DigitalOcean MONGO_URI
+# MONGO_URI='mongodb+srv://doadmin:9dl2gm8073J16yUq@db-mongodb-social-reading-815ddadc.mongo.ondigitalocean.com/admin?authSource=admin&replicaSet=db-mongodb-social-reading&tls=true&tlsCAFile=app/ca-certificate.cer'
+
+MONGO_URI = os.getenv('MONGO_URI')
 SOCIAL_SECRET = os.getenv('SOCIAL_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
