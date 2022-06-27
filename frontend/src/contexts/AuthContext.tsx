@@ -14,7 +14,7 @@ const DefaultProps = {
 };
 
 export interface AuthProps {
-  login: (username: string, password: string) => any;
+  login: (email: string, password: string) => any;
   logout: () => void;
   authAxios: AxiosInstance;
   user: UserModel | null;

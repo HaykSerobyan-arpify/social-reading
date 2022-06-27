@@ -1,6 +1,8 @@
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import JsonWebsocketConsumer
 
+from chat.models import Conversation
+
 
 class ChatConsumer(JsonWebsocketConsumer):
     """
@@ -10,15 +12,22 @@ class ChatConsumer(JsonWebsocketConsumer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(args, kwargs)
-        self.room_name = None
+        self.user = None
+        self.conversation_name = None
+        self.conversation = None
 
     def connect(self):
         print("Connected!")
-        self.room_name = "home"
+        self.user = self.scope["user"]
+        if not self.user.is_authenticated:
+            return
+
         self.accept()
+        self.conversation_name = f"{self.scope['url_route']['kwargs']['conversation_name']}"
+        self.conversation, created = Conversation.objects.get_or_create(name=self.conversation_name)
 
         async_to_sync(self.channel_layer.group_add)(
-            self.room_name,
+            self.conversation_name,
             self.channel_name,
         )
 
@@ -126,3 +135,46 @@ class ChatConsumer(JsonWebsocketConsumer):
 
 
 NOTIFICATION_TYPES = ((1, 'Like'), (2, 'Save'), (3, 'Comment'), (4, 'Upload'))
+
+
+class NotificationConsumer(JsonWebsocketConsumer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(args, kwargs)
+        self.user = None
+        self.notification_group_name = None
+
+    def connect(self):
+        self.user = self.scope["user"]
+        if not self.user.is_authenticated:
+            return
+
+        self.accept()
+
+        # private notification group
+        self.notification_group_name = self.user.username + "__notifications"
+        async_to_sync(self.channel_layer.group_add)(
+            self.notification_group_name,
+            self.channel_name,
+        )
+
+        # Send count of unread messages
+        unread_count = Message.objects.filter(to_user=self.user, read=False).count()
+        self.send_json(
+            {
+                "type": "unread_count",
+                "unread_count": unread_count,
+            }
+        )
+
+    def disconnect(self, code):
+        async_to_sync(self.channel_layer.group_discard)(
+            self.notification_group_name,
+            self.channel_name,
+        )
+        return super().disconnect(code)
+
+    def new_message_notification(self, event):
+        self.send_json(event)
+
+    def unread_count(self, event):
+        self.send_json(event)
