@@ -18,4 +18,5 @@ class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
 
     def perform_create(self, serializer):
+        print(self, self.request.user)
         serializer.save(user=self.request.user)

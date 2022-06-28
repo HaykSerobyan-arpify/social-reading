@@ -14,7 +14,7 @@ export function Conversations() {
 
   useEffect(() => {
     async function fetchUsers() {
-      const res = await fetch("http://127.0.0.1:8000/register/", {
+      const res = await fetch("http://192.168.1.106:8000/register/", {
         headers: {
           Authorization: `Token ${user?.token}`,
         },

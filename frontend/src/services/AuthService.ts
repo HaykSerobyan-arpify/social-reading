@@ -13,11 +13,11 @@ class AuthService {
   }
 
   async login(email: string, password: string): Promise<UserModel> {
-    const response = await axios.post("http://127.0.0.1:8000/auth/jwt/create/", { email, password });
+    const response = await axios.post("http://192.168.1.106:8000/auth/jwt/create/", { email, password });
     console.log(response.data)
     if (response.data) {
       //return response.data;
-      const resp = await axios.get("http://127.0.0.1:8000/auth/users/me/", { headers: { Authorization: "JWT " + response.data.access } })
+      const resp = await axios.get("http://192.168.1.106:8000/auth/users/me/", { headers: { Authorization: "JWT " + response.data.access } })
       if (resp.data) {
         console.log(resp.data)
         this.setUserInLocalStorage(resp.data);
