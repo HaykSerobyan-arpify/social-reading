@@ -11,7 +11,7 @@ export function ActiveConversations() {
 
   useEffect(() => {
     async function fetchUsers() {
-      const res = await fetch("http://127.0.0.1:8000/api/conversations/", {
+      const res = await fetch("http://192.168.1.106:8000/api/conversations/", {
         headers: {
           Authorization: `Token ${user?.token}`,
         },

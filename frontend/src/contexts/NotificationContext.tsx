@@ -22,7 +22,7 @@ export const NotificationContextProvider: React.FC<{ children: ReactNode }> = ({
   const [unreadMessageCount, setUnreadMessageCount] = useState(0);
 
   const { readyState } = useWebSocket(
-    user ? `ws://127.0.0.1:8000/notifications/` : null,
+    user ? `ws://192.168.1.106:8000/notifications/` : null,
     {
       queryParams: {
         token: user ? user.token : "",

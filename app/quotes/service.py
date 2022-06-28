@@ -56,7 +56,7 @@ def recognize_text(file_name):
 
 def get_text_from_book(recognized_array):
     client = pymongo.MongoClient(MONGO_URI)
-    db = client.social_reading_db
+    db = client.social
     sent = db.sentence_sentence
     search_result = []
     for sentence in recognized_array:
