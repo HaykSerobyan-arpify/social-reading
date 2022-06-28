@@ -6,11 +6,11 @@ from .models import Like
 
 
 class LikeSerializer(serializers.ModelSerializer):
-    user = UserFieldSerializer
+    user = UserFieldSerializer(read_only=True)
 
     class Meta:
         model = Like
-        fields = ('id', 'quote', 'user', 'like')
+        fields = ('id', 'quote', 'user')
 
 
 class LikeViewSet(viewsets.ModelViewSet):
