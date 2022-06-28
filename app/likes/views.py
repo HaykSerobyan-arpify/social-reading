@@ -10,7 +10,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Like
-        fields = ('id', 'quote', 'user', 'like')
+        fields = ('quote', 'like')
 
 
 class LikeViewSet(viewsets.ModelViewSet):
