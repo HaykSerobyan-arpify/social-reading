@@ -10,12 +10,9 @@ class LikeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Like
-        fields = ('quote', 'like')
+        fields = ('id', 'quote', 'user', 'like')
 
 
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     queryset = Like.objects.all()
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
