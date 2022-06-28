@@ -83,7 +83,7 @@ class QuotesViewSet(viewsets.ModelViewSet):
 
     def get_success_headers(self, data):
         client = pymongo.MongoClient(MONGO_URI)
-        db = client.social_reading_db
+        db = client.social
         category = data['book_category'].capitalize()
         user = self.request.user
         if db.categories_category.find_one({"name": category}) is None:
