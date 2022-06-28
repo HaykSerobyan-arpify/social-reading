@@ -12,7 +12,7 @@ class ChatConsumer(JsonWebsocketConsumer):
         self.room_name = None
 
     def connect(self):
-        print("Connected!")
+        # print("Connected!")
         self.room_name = "home"
         self.accept()
         self.send_json(
@@ -23,9 +23,9 @@ class ChatConsumer(JsonWebsocketConsumer):
         )
 
     def disconnect(self, code):
-        print("Disconnected!")
+        # print("Disconnected!")
         return super().disconnect(code)
 
     def receive_json(self, content, **kwargs):
-        print(content)
+        # print(content)
         return super().receive_json(content, **kwargs)
