@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from rest_framework import viewsets
 from app.settings import DATETIME_FORMAT
-from quotes.views import QuoteSerializer
-from register.views import UserFieldSerializer, UserSerializer
+from quotes.views import QuoteDetailSerializer
+from register.views import UserFieldSerializer
 from .models import Notification
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,8 +12,8 @@ class NotificationSerializer(serializers.ModelSerializer):
     date = serializers.DateTimeField(read_only=True, format=DATETIME_FORMAT, input_formats=None)
 
     user = UserFieldSerializer
-    post = QuoteSerializer(read_only=True)
-    sender = UserSerializer(read_only=True)
+    post = QuoteDetailSerializer(read_only=True)
+    sender = UserFieldSerializer(read_only=True)
 
     class Meta:
         model = Notification
