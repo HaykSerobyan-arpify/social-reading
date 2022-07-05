@@ -57,6 +57,14 @@ class QuoteSerializer(serializers.ModelSerializer):
                   'save_users', 'comments', 'published', 'is_active')
 
 
+class QuoteDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Quote
+        fields = ('id', 'book_author', 'quote_title', 'quote_text',
+                  'quote_text_json', 'percent', 'styles', 'text_background')
+
+
 class QuotesViewSet(viewsets.ModelViewSet):
     serializer_class = QuoteSerializer
     queryset = Quote.objects.all().order_by('-date_posted')
