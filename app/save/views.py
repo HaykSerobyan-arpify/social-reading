@@ -2,6 +2,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import serializers
 from rest_framework import viewsets
 from django_filters import rest_framework as filters
+from register.models import User
+from notification.models import Notification
+from quotes.models import Quote
 from register.views import UserFieldSerializer
 from .models import Save
 
@@ -33,4 +36,12 @@ class SaveViewSet(viewsets.ModelViewSet):
     filterset_class = SaveFilter
 
     def perform_create(self, serializer):
+        if self.request.data.get('user_id') != self.request.user.id:
+            Notification.objects.create(
+                post=Quote.objects.get(id=self.request.data.get('quote')),
+                sender=self.request.user,
+                user=User.objects.get(id=self.request.data.get('user_id')),
+                notification_type='save',
+            )
+
         serializer.save(user=self.request.user)

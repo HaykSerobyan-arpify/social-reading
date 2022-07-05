@@ -47,6 +47,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
+BACKEND_DOMAIN = os.getenv('BACKEND_DOMAIN')
 # DigitalOcean MONGO_URI
 # MONGO_URI='mongodb+srv://doadmin:9dl2gm8073J16yUq@db-mongodb-social-reading-815ddadc.mongo.ondigitalocean.com/admin?authSource=admin&replicaSet=db-mongodb-social-reading&tls=true&tlsCAFile=app/ca-certificate.cer'
 
@@ -143,7 +144,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            "hosts": [('192.168.1.106', 6379)],
+            "hosts": [('127.0.0.1', 6379)],
         },
     },
 }

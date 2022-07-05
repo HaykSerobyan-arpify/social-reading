@@ -1,6 +1,8 @@
 from django.urls import path
-from .views import showNotifications
+from rest_framework import routers
+from .views import NotificationViewSet
 
-urlpatterns = [
-    path('', showNotifications, name='show-notifications'),
-]
+router = routers.DefaultRouter()
+router.register('', NotificationViewSet)
+
+urlpatterns = router.urls
