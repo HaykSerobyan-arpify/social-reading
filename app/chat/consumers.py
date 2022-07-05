@@ -90,6 +90,7 @@ class ChatConsumer(WebsocketConsumer):
     online_users = db['chat_conversation_online'].find({})
 
     def connect(self):
+        print("connect")
         self.room_name = 'online'
         self.room_group_name = 'users'
 
@@ -102,6 +103,8 @@ class ChatConsumer(WebsocketConsumer):
         self.accept()
 
     def disconnect(self, close_code):
+        print("disconnect")
+
         # Leave room group
         async_to_sync(self.channel_layer.group_discard)(
             self.room_group_name,
