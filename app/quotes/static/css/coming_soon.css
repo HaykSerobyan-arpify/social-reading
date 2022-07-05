@@ -60,15 +60,10 @@ body {
 .footer {
     background: linear-gradient(180deg, #FFFFFF 0%, #2F80ED 100%);
     padding: 20px;
+    text-shadow: 2px 2px #00008B;
+    font-weight: bold;
     display: flex;
     align-items: center;
-    justify-content: space-around;
+    justify-content: center;
     color: white;
-    flex-wrap: wrap
-
-}
-.footer >
-
-.right_div {
-width: 200px
 }

@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import Message, Conversation
+from .models import Conversation
 
-admin.site.register(Message)
 admin.site.register(Conversation)

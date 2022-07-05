@@ -1,4 +1,5 @@
 from django.core.exceptions import FieldError
+from django.core.serializers import serialize
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -9,6 +10,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from comments.views import CommentsSerializer
 from likes.views import LikeSerializer
+from notification.models import Notification
 from quotes.models import Quote
 from categories.models import Category
 import pymongo
@@ -16,16 +18,21 @@ from app.settings import MONGO_URI, DATETIME_FORMAT
 from django_filters.rest_framework import DjangoFilterBackend
 from quotes.service import QuoteFilter, get_text_from_book, recognize_text
 from django.contrib.auth.models import AnonymousUser
+from app.settings import BACKEND_DOMAIN
+from register.models import User
 from register.views import UserSerializer
 from save.views import SaveSerializer
 
 
 def coming_soon(request):
-    return render(request, 'quotes/coming_soon.html')
+    # serializer_class = UserSerializer
+    # queryset = Notification.objects.all().order_by('date').values()
+    # for el in queryset:
+    #     print(el)
+    return render(request, 'quotes/coming_soon.html', {'backend_url': BACKEND_DOMAIN})
 
 
 def like_quote(request):
-
     quote = get_object_or_404(Quote, id=request.POST.get('quote_id'))
     if quote.likes.filter(id=request.user.id).exists():
         pass
@@ -67,19 +74,32 @@ class QuotesViewSet(viewsets.ModelViewSet):
 
         # text recognition
         recognized_array = recognize_text(self.request.data.get('quote_file'))
-        quote_text, text_JSON,  percent, author, title, category = get_text_from_book(recognized_array)
+        quote_text, text_JSON, percent, author, title, category = get_text_from_book(recognized_array)
         try:
             # test
             if isinstance(self.request.user, AnonymousUser):
                 serializer.save(author=None, book_author=author, quote_title=title,
                                 quote_text=quote_text, percent=percent, book_category=category,
-                                quote_text_json=text_JSON, quote_opencv_file=f"opencv/{self.request.data.get('quote_file')}")
+                                quote_text_json=text_JSON,
+                                quote_opencv_file=f"opencv/{self.request.data.get('quote_file')}")
             else:
                 serializer.save(author=self.request.user, book_author=author, quote_title=title,
                                 quote_text=quote_text, percent=percent, book_category=category,
-                                quote_text_json=text_JSON, quote_opencv_file=f"opencv/{self.request.data.get('quote_file')}")
+                                quote_text_json=text_JSON,
+                                quote_opencv_file=f"opencv/{self.request.data.get('quote_file')}")
         except ValueError:
             raise FieldError("User must be authorised")
+
+        for post in Quote.objects.filter(book_category=category):
+
+            if self.request.user.id != post.author.id:
+                Notification.objects.create(
+                    post=post,
+                    sender=self.request.user,
+                    user=User.objects.get(id=post.author.id),
+                    notification_type='upload',
+                    text_preview=category,
+                )
 
     def get_success_headers(self, data):
         client = pymongo.MongoClient(MONGO_URI)

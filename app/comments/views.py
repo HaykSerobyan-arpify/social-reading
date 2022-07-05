@@ -2,7 +2,10 @@ from rest_framework import viewsets
 from rest_framework import serializers
 from comments.models import Comment
 from app.settings import DATETIME_FORMAT
+from notification.models import Notification
+from quotes.models import Quote
 from register.views import UserFieldSerializer
+from register.models import User
 
 
 class FilterCommentListSerializer(serializers.ListSerializer):
@@ -42,4 +45,35 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
 
     def perform_create(self, serializer):
+
+        if self.request.user.id != self.request.data.get('post_author_id') \
+                and self.request.user.id != self.request.data.get('parent_user_id'):
+            if self.request.data.get('parent_user_id') is None:
+                print("POST AUTHOR", self.request.data.get('post_author_id'))
+                print("USER ", self.request.user.id)
+                Notification.objects.create(
+                    post=Quote.objects.get(id=self.request.data.get('quote')),
+                    sender=self.request.user,
+                    user=User.objects.get(id=self.request.data.get('post_author_id')),
+                    notification_type='comment',
+                )
+            else:
+                print("Commenti PARENT@", self.request.data.get('parent_user_id'))
+                print("POST AUTHOR", self.request.data.get('post_author_id'))
+                print("USER", self.request.data.get('user_id'))
+
+                Notification.objects.create(
+                    post=Quote.objects.get(id=self.request.data.get('quote')),
+                    sender=self.request.user,
+                    user=User.objects.get(id=self.request.data.get('parent_user_id')),
+                    notification_type='reply',
+                )
+                if self.request.data.get('post_author_id') != self.request.data.get('parent_user_id'):
+                    Notification.objects.create(
+                        post=Quote.objects.get(id=self.request.data.get('quote')),
+                        sender=self.request.user,
+                        user=User.objects.get(id=self.request.data.get('post_author_id')),
+                        notification_type='comment',
+                    )
+
         serializer.save(user=self.request.user)

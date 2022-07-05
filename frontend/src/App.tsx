@@ -1,55 +1,40 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ActiveConversations } from "./components/ActiveConversations";
-import { Chat } from "./components/Chat";
-import { Conversations } from "./components/Conversations";
-import { Login } from "./components/Login";
-import { Navbar } from "./components/Navbar";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import { AuthContextProvider } from "./contexts/AuthContext";
-import { NotificationContextProvider } from "./contexts/NotificationContext";
+import React, { useState, useContext } from "react";
+import useWebSocket, { ReadyState } from "react-use-websocket";
 
 export default function App() {
+  const [welcomeMessage, setWelcomeMessage] = useState('');
+  const { readyState } = useWebSocket("ws://127.0.0.1:8000/", {
+    onOpen: () => {
+      console.log("Connected!");
+    },
+    onClose: () => {
+      console.log("Disconnected!");
+    },
+    onMessage: (e) => {
+      const data = JSON.parse(e.data);
+      switch (data.type) {
+        case "welcome_message":
+          setWelcomeMessage(data.message);
+          console.log(data)
+          break;
+        default:
+          console.error("Unknown message type!");
+          break;
+      }
+    },
+  });
+
+  const connectionStatus = {
+    [ReadyState.CONNECTING]: "Connecting",
+    [ReadyState.OPEN]: "Open",
+    [ReadyState.CLOSING]: "Closing",
+    [ReadyState.CLOSED]: "Closed",
+    [ReadyState.UNINSTANTIATED]: "Uninstantiated",
+  }[readyState];
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <AuthContextProvider>
-              <NotificationContextProvider>
-                <Navbar />
-              </NotificationContextProvider>
-            </AuthContextProvider>
-          }
-        >
-          <Route
-            path=""
-            element={
-              <ProtectedRoute>
-                <Conversations />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="conversations/"
-            element={
-              <ProtectedRoute>
-                <ActiveConversations />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="chats/:conversationName"
-            element={
-              <ProtectedRoute>
-                <Chat />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="login" element={<Login />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <div>
+      <span>The WebSocket is currently {connectionStatus}</span>
+    </div>
   );
 }
