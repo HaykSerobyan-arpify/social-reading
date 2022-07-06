@@ -79,7 +79,7 @@ class QuotesViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         print(self.request.data)
-        if len(self.request.data.get('text')) == 0 and len(self.request.data.get('quote_file')) > 0:
+        if len(self.request.data.get('text')) == 0:
 
             if self.request.data.get('language') != 'eng':
 
