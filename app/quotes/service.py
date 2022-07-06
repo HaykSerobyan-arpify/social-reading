@@ -16,7 +16,34 @@ class TextDetectionError(APIException):
     default_detail = "Sorry, the text couldn't be recognized from this image. Please upload another image"
 
 
-def recognize_text(file_name):
+def recognize_another_text(file_name, lang='eng'):
+    image = Image.open(file_name)
+
+    open_cv_image = numpy.asarray(image)
+    image = cv2.cvtColor(open_cv_image, cv2.COLOR_BGR2GRAY)
+    thresh = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 201, 100)
+    text = pytesseract.image_to_string(image, lang=lang, config=r'--oem 3 --psm 6')
+    print(text)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
+    dilate = cv2.dilate(thresh, kernel, iterations=4)
+
+    # Find contours, highlight text areas, and extract ROIs
+    cnts = cv2.findContours(dilate, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cnts[0] if len(cnts) == 2 else cnts[1]
+    recognized_text = ''
+    ROI_number = 0
+    for c in cnts:
+        if 5000 < cv2.contourArea(c) < 400000:
+            x, y, w, h = cv2.boundingRect(c)
+            cv2.rectangle(image, (x, y), (x + w, y + h), (107, 0, 0), 3)
+            ROI = image[y:y + h, x:x + w]
+            text = pytesseract.image_to_string(ROI, lang=lang, config=r'--oem 3 --psm 6')
+            recognized_text += text
+            ROI_number += 1
+    return recognized_text
+
+
+def recognize_text(file_name, lang='eng'):
     try:
         image = Image.open(file_name)
         open_cv_image = numpy.asarray(image)
@@ -39,7 +66,7 @@ def recognize_text(file_name):
             x, y, w, h = cv2.boundingRect(c)
             cv2.rectangle(image, (x, y), (x + w, y + h), (107, 0, 0), 3)
             ROI = image[y:y + h, x:x + w]
-            text = pytesseract.image_to_string(ROI, lang='eng', config=r'--oem 3 --psm 6')
+            text = pytesseract.image_to_string(ROI, lang=lang, config=r'--oem 3 --psm 6')
             filter_text = [sentence for sentence in re.sub('[^A-Za-z0-9,.]+', ' ', text).lower().strip().split('.') if
                            len(sentence) > 20]
             recognized_text_array.extend(filter_text)

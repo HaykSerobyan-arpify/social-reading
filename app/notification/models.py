@@ -9,7 +9,12 @@ User = get_user_model()
 
 class Notification(models.Model):
     NOTIFICATION_TYPES = (
-    ('like', 'Like'), ('save', 'Save'), ('comment', 'Comment'), ('reply', 'Comment Answer'), ('upload', 'Upload'))
+        ('like', 'Like'),
+        ('save', 'Save'),
+        ('comment', 'Comment'),
+        ('reply', 'Comment Answer'),
+        ('upload', 'Upload'),
+    )
 
     post = models.ForeignKey(Quote, on_delete=models.CASCADE, related_name='noti_post', blank=True, null=True)
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='noti_from_user')

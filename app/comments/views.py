@@ -46,27 +46,33 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
 
+        if self.request.user.id == self.request.data.get('post_author_id') and self.request.data.get(
+                'parent_user_id') is not None:
+            Notification.objects.create(
+                post=Quote.objects.get(id=self.request.data.get('quote')),
+                sender=self.request.user,
+                user=User.objects.get(id=self.request.data.get('parent_user_id')),
+                notification_type='reply',
+                text_preview=self.request.data.get('body'),
+            )
+
         if self.request.user.id != self.request.data.get('post_author_id') \
                 and self.request.user.id != self.request.data.get('parent_user_id'):
             if self.request.data.get('parent_user_id') is None:
-                print("POST AUTHOR", self.request.data.get('post_author_id'))
-                print("USER ", self.request.user.id)
                 Notification.objects.create(
                     post=Quote.objects.get(id=self.request.data.get('quote')),
                     sender=self.request.user,
                     user=User.objects.get(id=self.request.data.get('post_author_id')),
                     notification_type='comment',
+                    text_preview=self.request.data.get('body'),
                 )
             else:
-                print("Commenti PARENT@", self.request.data.get('parent_user_id'))
-                print("POST AUTHOR", self.request.data.get('post_author_id'))
-                print("USER", self.request.data.get('user_id'))
-
                 Notification.objects.create(
                     post=Quote.objects.get(id=self.request.data.get('quote')),
                     sender=self.request.user,
                     user=User.objects.get(id=self.request.data.get('parent_user_id')),
                     notification_type='reply',
+                    text_preview=self.request.data.get('body'),
                 )
                 if self.request.data.get('post_author_id') != self.request.data.get('parent_user_id'):
                     Notification.objects.create(
@@ -74,6 +80,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                         sender=self.request.user,
                         user=User.objects.get(id=self.request.data.get('post_author_id')),
                         notification_type='comment',
+                        text_preview=self.request.data.get('body'),
                     )
 
         serializer.save(user=self.request.user)
