@@ -78,8 +78,7 @@ class QuotesViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        print(self.request.data)
-        if len(self.request.data.get('text')) == 0:
+        if len(self.request.data.get('text')) == 0 and len(self.request.data.get('quote_file')) > 0:
 
             if self.request.data.get('language') != 'eng':
 
@@ -93,7 +92,6 @@ class QuotesViewSet(viewsets.ModelViewSet):
                                 book_category=self.request.data.get('book_category'))
 
             if self.request.data.get('language') == 'eng':
-                print("LANGUAGE", self.request.data.get('language'))
 
                 # text recognition from Holy Bible
                 try:
@@ -135,12 +133,10 @@ class QuotesViewSet(viewsets.ModelViewSet):
                                     quote_text=text,
                                     percent=0,
                                     book_category=self.request.data.get('book_category'))
-                    print("another text ENGLISH")
 
         elif len(self.request.data.get('text')) == 0 and len(self.request.data.get('quote_file')) == 0:
             raise FieldError("Please choose TEXT or QUOTE FILE")
         else:
-            print("else")
             # Later here should be the logic to search from google
             book_author = self.request.data.get('book_author')
             quote_title = self.request.data.get('quote_title')
@@ -166,7 +162,6 @@ class QuotesViewSet(viewsets.ModelViewSet):
                         notification_type='upload',
                         text_preview=category,
                     )
-            pass
 
     def get_success_headers(self, data):
         client = pymongo.MongoClient(MONGO_URI)
