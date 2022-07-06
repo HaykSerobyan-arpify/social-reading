@@ -390,3 +390,11 @@ DOMAIN = os.getenv('DOMAIN')
 DRF_API_LOGGER_SIGNAL = True
 DRF_API_LOGGER_TIMEDELTA = 240
 DRF_API_LOGGER_DATABASE = True
+
+PYTESSERACT_LANGUAGES = (
+    ('eng', 'English'),
+    ('hye', 'Armenian'),
+    ('rus', 'Russian'),
+    ('fra', 'French'),
+    ('hin', 'Hindi'),
+)

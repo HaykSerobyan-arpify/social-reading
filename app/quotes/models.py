@@ -2,6 +2,7 @@ import uuid
 from django.core.validators import MinLengthValidator, validate_image_file_extension, FileExtensionValidator
 from django.db import models
 from register.models import User
+from app.settings import PYTESSERACT_LANGUAGES
 
 
 class Quote(models.Model):
@@ -9,8 +10,12 @@ class Quote(models.Model):
         primary_key=True,
         default=uuid.uuid4,
         editable=False)
+
     published = models.BooleanField(default=False)
+
     is_active = models.BooleanField(default=False)
+
+    language = models.CharField(max_length=10, choices=PYTESSERACT_LANGUAGES, default='eng')
 
     author = models.ForeignKey(User, related_name='author', on_delete=models.CASCADE, verbose_name='Quote author')
 
@@ -24,9 +29,12 @@ class Quote(models.Model):
                                      validators=[MinLengthValidator(limit_value=2, message=None), ],
                                      blank=True, null=True)
 
+    text = models.TextField('Text', blank=True, null=True)
+
     quote_file = models.ImageField('Quote', upload_to='upload',
                                    validators=[validate_image_file_extension,
-                                               FileExtensionValidator(allowed_extensions=['jpeg', 'png', 'jpg'])], )
+                                               FileExtensionValidator(allowed_extensions=['jpeg', 'png', 'jpg'])],
+                                   blank=True, null=True)
 
     quote_opencv_file = models.ImageField('Changed photo', upload_to='opencv',
                                           validators=[validate_image_file_extension,
