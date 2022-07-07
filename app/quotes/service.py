@@ -23,7 +23,7 @@ def recognize_another_text(file_name, lang='eng'):
     image = cv2.cvtColor(open_cv_image, cv2.COLOR_BGR2GRAY)
     thresh = cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 201, 100)
     text = pytesseract.image_to_string(image, lang=lang, config=r'--oem 3 --psm 6')
-    print(text)
+
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
     dilate = cv2.dilate(thresh, kernel, iterations=4)
 
@@ -40,6 +40,8 @@ def recognize_another_text(file_name, lang='eng'):
             text = pytesseract.image_to_string(ROI, lang=lang, config=r'--oem 3 --psm 6')
             recognized_text += text
             ROI_number += 1
+    if len(recognized_text) == 0:
+        recognized_text = text
     return recognized_text
 
 
