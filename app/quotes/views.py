@@ -142,7 +142,6 @@ class QuotesViewSet(viewsets.ModelViewSet):
             quote_title = self.request.data.get('quote_title')
             quote_text = self.request.data.get('text')
             category = self.request.data.get('book_category')
-            print(book_author, quote_title, quote_text, category)
 
             serializer.save(author=self.request.user,
                             book_author=book_author,
