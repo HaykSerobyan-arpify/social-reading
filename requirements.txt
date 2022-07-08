@@ -3,6 +3,8 @@ attrs==21.4.0
 bcrypt==3.2.2
 beautifulsoup4==4.11.1
 bleach==5.0.0
+boto3==1.24.25
+botocore==1.27.25
 cachetools==5.0.0
 certifi==2021.10.8
 cffi==1.15.0
@@ -26,6 +28,7 @@ django-mptt==0.13.4
 django-notifications-hq==1.7.0
 django-oauth-toolkit==2.0.0
 django-rest-auth==0.9.5
+django-storages==1.12.3
 django-templated-mail==1.1.1
 djangorestframework==3.13.1
 djangorestframework-recursive==0.1.2
