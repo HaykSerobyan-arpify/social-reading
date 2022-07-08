@@ -46,19 +46,10 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
 
-        if self.request.user.id == self.request.data.get('post_author_id') and self.request.data.get(
-                'parent_user_id') is not None:
-            Notification.objects.create(
-                post=Quote.objects.get(id=self.request.data.get('quote')),
-                sender=self.request.user,
-                user=User.objects.get(id=self.request.data.get('parent_user_id')),
-                notification_type='reply',
-                text_preview=self.request.data.get('body'),
-            )
-
-        if self.request.user.id != self.request.data.get('post_author_id') \
-                and self.request.user.id != self.request.data.get('parent_user_id'):
-            if self.request.data.get('parent_user_id') is None:
+        # reply chi uxxaki commenta
+        if self.request.data.get('parent_user_id') is None:
+            # ete user@ hexinak@ chi gnuma vor ira posti tak comment en arel
+            if int(self.request.data.get('post_author_id')) != int(self.request.user.id):
                 Notification.objects.create(
                     post=Quote.objects.get(id=self.request.data.get('quote')),
                     sender=self.request.user,
@@ -66,15 +57,51 @@ class CommentViewSet(viewsets.ModelViewSet):
                     notification_type='comment',
                     text_preview=self.request.data.get('body'),
                 )
+        # ete reply en anum
+        else:
+            # user@ ira posti tak urishin reply a anum
+            if int(self.request.data.get('post_author_id')) == int(self.request.user.id):
+                # stugum enq vor inq@ iran reply chani
+                if int(self.request.data.get('parent_user_id')) != int(self.request.user.id):
+                    Notification.objects.create(
+                        post=Quote.objects.get(id=self.request.data.get('quote')),
+                        sender=self.request.user,
+                        user=User.objects.get(id=self.request.data.get('parent_user_id')),
+                        notification_type='reply',
+                        text_preview=self.request.data.get('body'),
+                    )
+            # user@ urishi posti tak u reply a anum
             else:
-                Notification.objects.create(
-                    post=Quote.objects.get(id=self.request.data.get('quote')),
-                    sender=self.request.user,
-                    user=User.objects.get(id=self.request.data.get('parent_user_id')),
-                    notification_type='reply',
-                    text_preview=self.request.data.get('body'),
-                )
-                if self.request.data.get('post_author_id') != self.request.data.get('parent_user_id'):
+                # ete user@ iran chi reply anum urishi posti tak
+                if int(self.request.user.id) != int(self.request.data.get('parent_user_id')):
+                    # ete user@ urishi posti tak reply a anum henc urishin menak reply a gnum
+                    if int(self.request.data.get('parent_user_id')) == int(self.request.data.get('post_author_id')):
+                        # urishin gnuma vor iran reply em arel
+                        Notification.objects.create(
+                            post=Quote.objects.get(id=self.request.data.get('quote')),
+                            sender=self.request.user,
+                            user=User.objects.get(id=self.request.data.get('parent_user_id')),
+                            notification_type='reply',
+                            text_preview=self.request.data.get('body'),
+                        )
+                    else:
+                        # urishin gnuma vor iran reply em arel
+                        Notification.objects.create(
+                            post=Quote.objects.get(id=self.request.data.get('quote')),
+                            sender=self.request.user,
+                            user=User.objects.get(id=self.request.data.get('parent_user_id')),
+                            notification_type='reply',
+                            text_preview=self.request.data.get('body'),
+                        )
+                        # posti hexinakin namaka gnum vor comment a avelacel
+                        Notification.objects.create(
+                            post=Quote.objects.get(id=self.request.data.get('quote')),
+                            sender=self.request.user,
+                            user=User.objects.get(id=self.request.data.get('post_author_id')),
+                            notification_type='comment',
+                            text_preview=self.request.data.get('body'),
+                        )
+                else:
                     Notification.objects.create(
                         post=Quote.objects.get(id=self.request.data.get('quote')),
                         sender=self.request.user,
