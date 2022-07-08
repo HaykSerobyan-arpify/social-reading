@@ -25,10 +25,6 @@ from django.core.exceptions import FieldError
 
 
 def coming_soon(request):
-    # serializer_class = UserSerializer
-    # queryset = Notification.objects.all().order_by('date').values()
-    # for el in queryset:
-    #     print(el)
     return render(request, 'quotes/coming_soon.html', {'backend_url': BACKEND_DOMAIN})
 
 
@@ -70,18 +66,38 @@ class QuotesViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = QuoteFilter
 
+    # when delete quote all notifications must be deleted automatically
+    # def destroy(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     print(instance.id)
+    #     self.perform_destroy(instance)
+    #     for notify in Notification.objects.filter(post_id=instance.id):
+    #         print("NOTIFY", notify)
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
+
+        # create Notifications for all users by this category
+        # we can change it by book name later . . . . . . . . . . ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+        for post in Quote.objects.filter(book_category=serializer.data.get('book_category')):
+            if self.request.user.id == post.author.id:
+                Notification.objects.create(
+                    post=Quote.objects.get(id=serializer.data.get('id')),
+                    sender=self.request.user,
+                    user=User.objects.get(id=post.author.id),
+                    notification_type='upload',
+                    text_preview=serializer.data.get('book_category'),
+                )
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
         if len(self.request.data.get('text')) == 0 and len(self.request.data.get('quote_file')) > 0:
 
             if self.request.data.get('language') != 'eng':
-
                 text = recognize_another_text(self.request.data.get('quote_file'), self.request.data.get('language'))
 
                 serializer.save(author=self.request.user,
@@ -149,18 +165,6 @@ class QuotesViewSet(viewsets.ModelViewSet):
                             quote_text=quote_text,
                             percent=0,
                             book_category=category)
-
-            # create Notifications for all users by this category
-            for post in Quote.objects.filter(book_category=category):
-
-                if self.request.user.id != post.author.id:
-                    Notification.objects.create(
-                        post=post,
-                        sender=self.request.user,
-                        user=User.objects.get(id=post.author.id),
-                        notification_type='upload',
-                        text_preview=category,
-                    )
 
     def get_success_headers(self, data):
         client = pymongo.MongoClient(MONGO_URI)
