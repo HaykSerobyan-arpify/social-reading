@@ -66,32 +66,41 @@ class QuotesViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = QuoteFilter
 
-    # when delete quote all notifications must be deleted automatically
-    # def destroy(self, request, *args, **kwargs):
-    #     instance = self.get_object()
-    #     print(instance.id)
-    #     self.perform_destroy(instance)
-    #     for notify in Notification.objects.filter(post_id=instance.id):
-    #         print("NOTIFY", notify)
-    #     return Response(status=status.HTTP_204_NO_CONTENT)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        another_users_id = set()
+        if self.request.data.get('published'):
+            for post in Quote.objects.filter(book_category=serializer.data.get('book_category')):
+                if self.request.user.id != post.author.id:
+                    another_users_id.add(post.author.id)
+
+            for user_id in another_users_id:
+                # create Notifications for all users by this category
+                # we can change it by book name later . . . . . . . . . . ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+                Notification.objects.create(
+                    post=Quote.objects.get(id=instance.id),
+                    sender=self.request.user,
+                    user=User.objects.get(id=user_id),
+                    notification_type='upload',
+                    text_preview=serializer.data.get('book_category'),
+                )
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-
-        # create Notifications for all users by this category
-        # we can change it by book name later . . . . . . . . . . ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
-        for post in Quote.objects.filter(book_category=serializer.data.get('book_category')):
-            if self.request.user.id == post.author.id:
-                Notification.objects.create(
-                    post=Quote.objects.get(id=serializer.data.get('id')),
-                    sender=self.request.user,
-                    user=User.objects.get(id=post.author.id),
-                    notification_type='upload',
-                    text_preview=serializer.data.get('book_category'),
-                )
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
@@ -168,7 +177,7 @@ class QuotesViewSet(viewsets.ModelViewSet):
 
     def get_success_headers(self, data):
         client = pymongo.MongoClient(MONGO_URI)
-        db = client.social
+        db = client.social_reading_db
         category = data['book_category'].capitalize()
         user = self.request.user
         if db.categories_category.find_one({"name": category}) is None:
