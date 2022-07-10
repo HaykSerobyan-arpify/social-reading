@@ -17,7 +17,7 @@ RUN apt-get update \
     #python-setuptools \
     python3-pip \
     && apt-get clean \
-    && apt-get autoremove \
+    && apt-get autoremove
 # add tesseract French & Hindi languages
 RUN apt install tesseract-ocr-fra && apt install tesseract-ocr-hin
 RUN pip install -r requirements.txt
