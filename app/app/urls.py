@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from app.settings import MEDIA_ROOT, STATIC_ROOT, STATIC_URL
 from django.views.static import serve
-from quotes.views import coming_soon, PublishQuotesViewSet
+from quotes.views import coming_soon, ShareQuote, PublishQuotesViewSet
 
 # DRF YASG
 from rest_framework import permissions
@@ -41,6 +41,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     path('', coming_soon, name='coming_soon'),
+    path('share/<uuid:pk>/', ShareQuote.as_view(), name='share_view'),
     path('social_auth/', include(('social_auth.urls', 'social_auth'),
                                  namespace="social_auth")),
     path('admin/', admin.site.urls),

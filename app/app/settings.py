@@ -7,15 +7,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
-import sys
-
-import channels.layers
-import channels_redis.core
+# import sys
+# import channels.layers
+# import channels_redis.core
 import environ
 from abc import ABC
 from datetime import timedelta
 from pathlib import Path
-
 from djongo.base import DatabaseWrapper
 from djongo.operations import DatabaseOperations
 
@@ -50,9 +48,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 BACKEND_DOMAIN = os.getenv('BACKEND_DOMAIN')
 # DigitalOcean MONGO_URI
-MONGO_URI = 'mongodb+srv://doadmin:9dl2gm8073J16yUq@db-mongodb-social-reading-815ddadc.mongo.ondigitalocean.com/admin?authSource=admin&replicaSet=db-mongodb-social-reading&tls=true&tlsCAFile=app/ca-certificate.cer'
+# MONGO_URI = 'mongodb+srv://doadmin:9dl2gm8073J16yUq@db-mongodb-social-reading-815ddadc.mongo.ondigitalocean.com/admin?authSource=admin&replicaSet=db-mongodb-social-reading&tls=true&tlsCAFile=app/ca-certificate.cer'
 
-# MONGO_URI = os.getenv('MONGO_URI')
+MONGO_URI = os.getenv('MONGO_URI')
 SOCIAL_SECRET = os.getenv('SOCIAL_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -62,6 +60,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'django_social_share',
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -156,7 +155,7 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'social_reading_db',
+        'NAME': 'social',
         'CLIENT': {
             'host': MONGO_URI
         },

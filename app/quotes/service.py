@@ -1,5 +1,5 @@
 import re
-from collections import Counter, OrderedDict
+from collections import Counter
 import cv2
 import numpy
 import pymongo

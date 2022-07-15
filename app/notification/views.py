@@ -17,7 +17,8 @@ class NotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = ('id', 'user', 'post', 'sender', 'notification_type', 'text_preview', 'date', 'is_seen')
+        fields = ('id', 'user', 'post', 'sender', 'notification_type',
+                  'text_preview', 'date', 'is_seen', 'is_open')
 
 
 class CharFilterInFilter(filters.BaseInFilter, filters.CharFilter):

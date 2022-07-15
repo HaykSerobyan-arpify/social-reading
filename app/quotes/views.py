@@ -1,3 +1,4 @@
+from rest_framework.views import APIView
 from .service import TextDetectionError
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -17,15 +18,38 @@ from app.settings import MONGO_URI, DATETIME_FORMAT
 from django_filters.rest_framework import DjangoFilterBackend
 from quotes.service import QuoteFilter, get_text_from_book, recognize_text, recognize_another_text
 from django.contrib.auth.models import AnonymousUser
-from app.settings import BACKEND_DOMAIN
+from app.settings import BACKEND_DOMAIN, DOMAIN
 from register.models import User
 from register.views import UserSerializer
 from save.views import SaveSerializer
 from django.core.exceptions import FieldError
+import requests
+from pprint import pprint
+import json
 
 
 def coming_soon(request):
     return render(request, 'quotes/coming_soon.html', {'backend_url': BACKEND_DOMAIN})
+
+
+class ShareQuote(APIView):
+    def get(self, request, *args, **kwargs):
+        post_id = self.kwargs['pk']
+        resp = requests.get(f'https://www.sr-be.arpify.com/quotes/{post_id}')
+        post = json.loads(resp.text)
+
+        # return render(request, "quotes/home.html", {'url': f'https://d7cb-31-47-198-190.eu.ngrok.io/share/{post_id}',
+        #                                             'post': post})
+
+        return render(request, 'quotes/share_view.html', {'post': post,
+                                                          'url': f'https://www.sr-be.arpify.com/share/{post_id}',
+                                                          'color': json.loads(post['styles']).get('color'),
+                                                          'background': json.loads(post['styles']).get('background'),
+                                                          'font': json.loads(post['styles']).get('font'),
+                                                          'size': json.loads(post['styles']).get('size'),
+                                                          'likes_count': len(post.get('likes')),
+                                                          'comments_count': len(post.get('comments')),
+                                                          'front_url': DOMAIN})
 
 
 def like_quote(request):
@@ -177,7 +201,7 @@ class QuotesViewSet(viewsets.ModelViewSet):
 
     def get_success_headers(self, data):
         client = pymongo.MongoClient(MONGO_URI)
-        db = client.social_reading_db
+        db = client.social
         category = data['book_category'].capitalize()
         user = self.request.user
         if db.categories_category.find_one({"name": category}) is None:
